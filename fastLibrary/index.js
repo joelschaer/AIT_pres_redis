@@ -1,18 +1,25 @@
-var express = require('express'),
-  MongoClient = require('mongodb').MongoClient,
-  app = express(),
-  mongoUrl = 'mongodb+srv://ait:ait@cluster0-bj3cx.mongodb.net/test?retryWrites=true';
+const express = require('express');
+const app = express();
 
-var redisClient = require('redis').createClient;
-var redis = redisClient(6379, 'localhost');
+// Connetion to DB
+const MongoClient = require('mongodb').MongoClient;
+const mongoUrl = 'mongodb+srv://ait:ait@cluster0-te75z.mongodb.net/admin?retryWrites=true';
 
-var access = require('./access.js');
+// Connection to redis DB
+const redisClient = require('redis').createClient;
+const redis = redisClient(6379, 'localhost');
+
+const access = require('./access.js');
 
 // changer la variable pour utiliser ou non le caching
 const CACHED = true;
 
-MongoClient.connect(mongoUrl, function (err, db) {
+app.use(express.json());
+
+MongoClient.connect(mongoUrl, { useNewUrlParser: true } , function (err, client) {
   if (err) throw 'Error connecting to database - ' + err;
+
+  const db = client.db('library');
 
   app.post('/book', function (req, res) {
     if (!req.body.title || !req.body.author) res.status(400).send("Please send a title and an author for the book");
@@ -26,16 +33,16 @@ MongoClient.connect(mongoUrl, function (err, db) {
   });
 
   app.get('/book/:title', function (req, res) {
-    if (!req.param('title')) res.status(400).send("Please send a proper title");
+    if (!req.params.title) res.status(400).send("Please send a proper title");
     else {
       if (CACHED) {
-        access.findBookByTitleCached(db, redis, req.param('title'), function (book) {
-          if (!text) res.status(500).send("Server error");
+        access.findBookByTitleCached(db, redis, req.params.title, function (book) {
+          if (!book.text) res.status(500).send("Server error");
           else res.status(200).send(book);
       });
       } else {
-        access.findBookByTitle(db, req.param('title'), function (book) {
-          if (!text) res.status(500).send("Server error");
+        access.findBookByTitle(db, req.params.title, function (book) {
+          if (!book.text) res.status(500).send("Server error");
           else res.status(200).send(book);
         });
       }
