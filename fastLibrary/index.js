@@ -26,7 +26,8 @@ MongoClient.connect(mongoUrl, { useNewUrlParser: true } , function (err, client)
     else if (!req.body.text) res.status(400).send("Please send some text for the book");
     else {
       access.saveBook(db, req.body.title, req.body.author, req.body.text, function (err) {
-        if (err) res.status(500).send("Server error");
+        if (err == 'exist') res.status(400).send("Book already exists");
+        else if (err) res.status(500).send("Server error");
         else res.status(201).send("Saved");
       });
     }
@@ -42,12 +43,24 @@ MongoClient.connect(mongoUrl, { useNewUrlParser: true } , function (err, client)
       });
       } else {
         access.findBookByTitle(db, req.params.title, function (book) {
-          if (!book.text) res.status(500).send("Server error");
+          if (!book) res.status(500).send("Server error");
           else res.status(200).send(book);
         });
       }
     }
   });
+
+  app.put('/book/:title', function (req, res) {
+    if (!req.params.title) res.status(400).send("Please send the book title");
+    else if (!req.body.text) res.status(400).send("Please send the new text");
+    else {
+        access.updateBookByTitle(db, redis, req.params.title, req.body.text, function (err) {
+            if (err == "Missing book") res.status(404).send("Book not found");
+            else if (err) res.status(500).send("Server error");
+            else res.status(200).send("Updated");
+        });
+    }
+});
 
   app.listen(8000, function () {
     console.log('Listening on port 8000');

@@ -1,9 +1,19 @@
+const access = require('./access.js');
+
 module.exports.saveBook = function (db, title, author, text, callback) {
-  db.collection('book').insertOne({
-    title: title,
-    author: author,
-    text: text
-  }, callback);
+  access.findBookByTitle(db, title, function (book) {
+    if(!book){
+      db.collection('book').insertOne({
+        title: title,
+        author: author,
+        text: text
+      }, callback);
+    }
+    else {
+      callback('exist');
+    }
+  });
+  
 };
 
 // version sans cache
@@ -36,5 +46,28 @@ module.exports.findBookByTitleCached = function (db, redis, title, callback) {
         }
       });
     }
+  });
+};
+
+// update a book and update it in the cache
+module.exports.updateBookByTitle = function (db, redis, title, newText, callback) {
+  db.collection('book').findOneAndUpdate({
+      title: title
+  }, {
+      $set: {
+          text: newText
+      }
+  },{ 
+    returnOriginal:false
+  }, function (err, doc) { //Update the main database
+      if (err) callback(err);
+      else if (!doc) callback('Missing book');
+      else {
+          //Save new book version to cache
+          redis.set(title, JSON.stringify(doc.value), function (err) {
+              if (err) callback(err);
+              else callback(null);
+          });
+      }
   });
 };
