@@ -1,3 +1,5 @@
+Yohann Meyer, Yann Lederrey et Joel Schär
+
 # DB Caching avec Redis
 
 Pour illustrer l'utilisation de redis pour faire du db caching, nous allons mettre un place une structre avec MongoDB et Express.js.
@@ -39,7 +41,22 @@ Definir l'espace maximum que le cache est autorisé à utiliser.
 
 ### Caching Policy
 
-- LRU (Least Recently Used) : `--maxmemory-policy allkeys-lru`
+`--maxmemory-policy <policy>`
+
+- `noeviction` : rien n'est retiré
+- ` allkeys-lru` : LRU (Least Recently Used), retire les clés utilisées les moins récemment.
+- `volatile-lru `  :  éviction selon LRU pour les clé avec **expire set**
+- `allkeys-random`  : aléatoirement
+- `volatile-random`  : aléatoirement, mais seulement si flag volatile est set.
+- `volatile-ttl` : clé avec **expire set** est un petit ttl seront évincée.
+
+`volatile` : si aucune clé n'est définir (**expire set**) : on procède comme `noeviction` 
+
+### Autre praramètres
+
+`--port <port>`
+
+`--slaveof <ip> <port> `
 
 ## Utilisation
 
