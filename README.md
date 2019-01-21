@@ -33,6 +33,9 @@ redis-server
 
 Par défaut redis stock dans la RAM tant qu'il y trouve de la place. Il va donc surcharger la RAM au bout d'un moment. Pour éviter cela il est important de donner une règle 
 
+fichier de configuration dans : `/etc/redis/redis.conf`
+`sudo /etc/init.d/redis-server start`
+
 ### Memory
 
 Definir l'espace maximum que le cache est autorisé à utiliser.
@@ -79,6 +82,7 @@ ouvrir la ligne de commande CLI : `redis-cli`
 - `monitor` : permet de voir toutes les actions du serveur
 - `FLUSHALL` : vider le caches redis
 - `DEL <key>` : delete value
+- `config get <patern>` : permet de voir la configuration
 
 ## Intégration
 
