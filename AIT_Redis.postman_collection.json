@@ -22,7 +22,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"title\": \"ouioui2\",\n\t\"author\": \"yann\",\n\t\"text\": \"ceci est l'hisoire de ouioui\"\n}"
+					"raw": "{\n\t\"title\": \"ouioui3\",\n\t\"author\": \"yann\",\n\t\"text\": \"ceci est l'hisoire de ouioui\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8000/book",
@@ -68,6 +68,40 @@
 					"path": [
 						"book",
 						"ouioui"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Book Copy",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "application01",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"text\": \"ouioui n'a plus de taxi, mais une maison de roi\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/book/ouioui3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"book",
+						"ouioui3"
 					]
 				}
 			},
